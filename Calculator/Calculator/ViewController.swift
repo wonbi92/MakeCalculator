@@ -31,15 +31,20 @@ class ViewController: UIViewController {
     
     func formattingToDecimal(num: String) {
         numberFormatter.numberStyle = .decimal
-        numberOutputLabel.text = numberFormatter.string(for: Int(displayNumber) ?? 0)
+        if displayNumber.contains(".") {
+            guard let naturalNumber = numberFormatter.string(for: Int(displayNumber.components(separatedBy: ".")[0]) ?? 0) else { return }
+            numberOutputLabel.text = naturalNumber + "." + num.components(separatedBy: ".")[1]
+        } else {
+            numberOutputLabel.text = numberFormatter.string(for: Int(displayNumber) ?? 0)
+        }
     }
 
     @IBAction func tapNumberButton(_ sender: UIButton) {
-        if numberOutputLabel.text == "0" && sender.currentTitle == "0" { return }
+        if displayNumber.isEmpty && sender.currentTitle == "0" { return }
         guard let numberValue = sender.currentTitle else { return }
-        if displayNumber.count < 9 {
+        if displayNumber.count < 10 {
             displayNumber += numberValue
-            numberOutputLabel.text = displayNumber
+            formattingToDecimal(num: displayNumber)
         }
     }
     
@@ -53,9 +58,9 @@ class ViewController: UIViewController {
     }
     
     @IBAction func tapDotButton(_ sender: UIButton) {
-        if displayNumber.count < 8, !displayNumber.contains(".") {
+        if displayNumber.count < 9, !displayNumber.contains(".") {
             displayNumber += displayNumber.isEmpty ? "0." : "."
-            numberOutputLabel.text = displayNumber
+            formattingToDecimal(num: displayNumber)
         }
     }
     

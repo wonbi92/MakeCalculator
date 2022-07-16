@@ -63,3 +63,30 @@
         - NumberFormmatter라는 기능을 알게 되었다. 참고(https://jeong9216.tistory.com/104)
         - 이 기능을 이용해서 꼭 세자리 콤마 찍기를 구현해야겠다고 생각했다.~~(아직 못했음)~~
         
+
+# 2022.7.16
+
+## 세자리 콤마 및 소수점 해결하기
+
+### 세자리 콤마 넣기
+- `tapNumberButton`메소드 안에서 이 문제를 한번에 해결하기에는 적절하지 못하다 판단하여 세자리 콤마를 넣어주는 메소드를 따로 구현해봤다.
+- 문제는 소수점 밑으로는 콤마가 들어가선 안되고, 그 전까진 콤마가 들어가는 것이 유지되어 있어야 한다는 점이다.
+- 다음과 같은 방법으로 해결해보았다.
+    1. 일단 소수점이 있는 경우와 없는 경우를 구분한다.
+    2. 소수점이 있을 경우, `components`라는 `String`타입의 메소드를 활용하여 앞부분과 뒷부분을 구분해서 앞부분은 `numberFormatter.string`메소드를 활용해서 세자리마다 콤마가 들어가게 해준다.
+    3. 그리고 소수점 이후 숫자들은 그대로 사용한다.
+    4. 그다음 세자리 콤마가 포함된 글자와 소수점, 소수점 뒷부분 숫자를 합친 값을 아웃풋 라벨에 대입한다.
+    5. 소수점이 없을 경우, `numberFormatter.string`메소드를 이용해서 세자리마다 콤마가 들어가게 해준 뒤 바로 아웃풋 라벨에 대입한다.
+- 코드로 보면 다음과 같다.
+```Swift
+    func formattingToDecimal(num: String) {
+        numberFormatter.numberStyle = .decimal
+        //숫자의 스타일을 세자리마다 콤마가 들어가게 바꿔주는 스타일로 바꿈
+        if displayNumber.contains(".") {
+            guard let naturalNumber = numberFormatter.string(for: Int(displayNumber.components(separatedBy: ".")[0]) ?? 0) else { return }
+            numberOutputLabel.text = naturalNumber + "." + num.components(separatedBy: ".")[1]
+        } else {
+            numberOutputLabel.text = numberFormatter.string(for: Int(displayNumber) ?? 0)
+        }
+    }
+```
