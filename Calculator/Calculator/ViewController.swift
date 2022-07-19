@@ -21,7 +21,7 @@ class ViewController: UIViewController {
     var displayNumber: String = ""
     var firstOperand: Double = 0
     var secondOperand: Double = 0
-    var result: String = ""
+    var result: String = "0"
     var currentOperation: Operation = .unknwon
     let numberFormatter = NumberFormatter()
     
@@ -52,7 +52,7 @@ class ViewController: UIViewController {
         displayNumber = ""
         firstOperand = 0
         secondOperand = 0
-        result = ""
+        result = "0"
         currentOperation = .unknwon
         numberOutputLabel.text = "0"
     }
@@ -84,30 +84,38 @@ class ViewController: UIViewController {
         operation(currentOperation)
     }
     
+    func operating(a: Double, b: Double) {
+        guard result.count < 10 else {
+            print(result)
+            return }
+        switch currentOperation {
+        case .Add:
+            result = "\(a + b)"
+        case .Subtract:
+            result = "\(a - b)"
+        case .Multiply:
+            result = "\(a * b)"
+        case .Divide:
+            result = "\(a / b)"
+        default:
+            break
+        }
+        
+        if let result = Double(result), result.truncatingRemainder(dividingBy: 1) == 0 {
+            self.result = "\(Int(result))"
+        }
+        firstOperand = Double(result) ?? 0
+        formattingToDecimal(num: result)
+    }
+    
     func operation(_ operation: Operation) {
         if currentOperation != .unknwon {
             if !displayNumber.isEmpty {
                 secondOperand = Double(displayNumber) ?? 0
                 displayNumber = ""
-                let firstDoubleOperand = Double(firstOperand)
-                let secondDoubleOperand = Double(secondOperand)
-                switch currentOperation {
-                case .Add:
-                    result = "\(firstDoubleOperand + secondDoubleOperand)"
-                case .Subtract:
-                    result = "\(firstDoubleOperand - secondDoubleOperand)"
-                case .Multiply:
-                    result = "\(firstDoubleOperand * secondDoubleOperand)"
-                case .Divide:
-                    result = "\(firstDoubleOperand / secondDoubleOperand)"
-                default:
-                    break
-                }
-                if let result = Double(result), result.truncatingRemainder(dividingBy: 1) == 0 {
-                    self.result = "\(Int(result))"
-                }
-                firstOperand = Double(result) ?? 0
-                formattingToDecimal(num: result)
+                operating(a: firstOperand, b: secondOperand)
+            } else {
+                operating(a: firstOperand, b: secondOperand)
             }
             currentOperation = operation
         } else {
